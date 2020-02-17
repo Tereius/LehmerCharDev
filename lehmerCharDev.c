@@ -16,25 +16,31 @@ static int major;
 
 static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
-    size_t ret = 0;
-    char ring[2048];
-    size_t size = min(sizeof(ring) - sizeof(uint64_t) + 1, len);
+    size_t written = 0;
     
-    while(ret < size) {
-        uint64_t rng = lehmer64();
-        memcpy(ring + ret, &rng, sizeof(rng));
-        ret += sizeof(rng);
-    }
-    
-    ret = min(ret, len);
-    
-    if (copy_to_user(buf, ring, ret)) {
-        ret = -EFAULT;
-    } else {
-        *off += ret;
+    while(written < len) {
+        size_t ret = 0;
+        char ring[2048];
+        size_t size = min(sizeof(ring) - sizeof(uint64_t) + 1, len - written);
+        
+        while(ret < size) {
+            uint64_t rng = lehmer64();
+            memcpy(ring + ret, &rng, sizeof(rng));
+            ret += sizeof(rng);
+        }
+        
+        ret = min(ret, len - written);
+        
+        if (copy_to_user(buf + written, ring, ret)) {
+            written = -EFAULT;
+            break;
+        } else {
+            *off += ret;
+        }
+        written += ret;
     }
 
-    return ret;
+    return written;
 }
 
 static const struct file_operations fops = {
