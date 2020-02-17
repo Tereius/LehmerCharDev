@@ -14,7 +14,7 @@ if(NOT "${CMAKE_GENERATOR}" STREQUAL "Unix Makefiles")
     message(SEND_ERROR "Only the generator \"Unix Makefiles\" is supported")
 endif()
 
-set(KBUILD_CMD "${CMAKE_MAKE_PROGRAM}" -C ${KERNELHEADERS_DIR} M=${CMAKE_CURRENT_BINARY_DIR} CFLAGS='-O2' src=${CMAKE_CURRENT_SOURCE_DIR})
+set(KBUILD_CMD "${CMAKE_MAKE_PROGRAM}" -C ${KERNELHEADERS_DIR} M=${CMAKE_CURRENT_BINARY_DIR} src=${CMAKE_CURRENT_SOURCE_DIR})
 
 # Generate the Kbuild file through cmake.
 FILE(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/Kbuild "obj-m := lehmerCharDev.o")

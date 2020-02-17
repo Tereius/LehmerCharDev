@@ -17,14 +17,23 @@ static int major;
 static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
     size_t ret = 0;
-    uint64_t rng = lehmer64();
-
-    if (copy_to_user(buf, &rng, sizeof(&rng))) {
+    char ring[2048];
+    size_t size = min(sizeof(ring) - sizeof(uint64_t) + 1, len);
+    
+    while(ret < size) {
+        uint64_t rng = lehmer64();
+        memcpy(ring + ret, &rng, sizeof(rng));
+        ret += sizeof(rng);
+    }
+    
+    ret = min(ret, len);
+    
+    if (copy_to_user(buf, ring, ret)) {
         ret = -EFAULT;
     } else {
-        ret = sizeof(&rng);
         *off += ret;
     }
+
     return ret;
 }
 
