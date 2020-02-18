@@ -28,14 +28,14 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/inst.sh" "#!/bin/bash
 echo \"Installing module\"
 source uinst.sh > /dev/null 2>&1
 sudo insmod lehmerCharDev.ko
-dev=\"lehmer_character_device\"
+dev=\"lehmer\"
 major=\"$(sudo grep \"$dev\" /proc/devices | cut -d ' ' -f 1)\"
 sudo mknod \"/dev/$dev\" c \"$major\" 0
 ")
 
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/uinst.sh" "#!/bin/bash
 echo \"Unstalling module\"
-sudo rm /dev/lehmer_character_device
+sudo rm /dev/lehmer
 sudo rmmod lehmerCharDev
 ")
 
